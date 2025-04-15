@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECET MATHS Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #000000, #2d2d33, #1b8e42);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .start-screen, .quiz-container, .result-screen {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(22, 179, 20, 0.2);
+      box-shadow: 0 0 20px #fbfbfb;
+      border-radius: 20px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      display: none;
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .active {
+      display: block;
+    }
+
+    h1, h2 {
+      margin-bottom: 1rem;
+      font-size: 2rem;
+      color: #00fff7;
+      text-shadow: 0 0 10px #00fff7;
+    }
+
+    button {
+      background: #000000;
+      text-shadow: 0 0 10px #dddddd;
+      border: none;
+      color: #f0eeee;
+      padding: 0.75rem 2rem;
+      margin-top: 1rem;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s;
+    }
+
+    button:hover {
+      background: #00c8c3;
+      transform: scale(1.05);
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    #explanation {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="start-screen active" id="startScreen">
+    <h1>⚡TAG_AND_DESIGN⚡</h1>
+    <input type="text" id="username" placeholder="Enter your name" style="padding: 0.5rem; border-radius: 5px; margin-top: 1rem; width: 80%;">
+    <br>
+    <button onclick="startQuiz()">Start Quiz</button>
+  </div>
+
+  <div class="quiz-container" id="quizContainer">
+    <h2 id="question">Question text will appear here</h2>
+    <div id="options"></div>
+    <button onclick="showExplanation()">Show Explanation</button>
+    <p id="explanation"></p>
+    <button onclick="nextQuestion()">Next</button>
+  </div>
+
+  <div class="result-screen" id="resultScreen">
+    <h2>Quiz Completed!</h2>
+    <p id="scoreText"></p>
+    <button onclick="restartQuiz()">Restart Quiz</button>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "If A = [1 2; 3 4], then |A| = ?",
+        options: ["-2", "2", "10", "7"],
+        answer: 0,
+        explanation: "Determinant of a 2x2 matrix A = ad - bc = (1*4 - 2*3) = -2"
+      },
+      {
+        question: "The value of sin^2 θ + cos^2 θ is:",
+        options: ["0", "1", "θ", "Cannot be determined"],
+        answer: 1,
+        explanation: "This is a fundamental identity in trigonometry."
+      },
+      {
+        question: "What is the derivative of sin(x)?",
+        options: ["cos(x)", "-cos(x)", "-sin(x)", "tan(x)"],
+        answer: 0,
+        explanation: "d/dx[sin(x)] = cos(x)"
+      },
+      {
+        question: "The value of (a + b)^2 is:",
+        options: ["a^2 + b^2", "a^2 + 2ab + b^2", "2a + 2b", "None"],
+        answer: 1,
+        explanation: "(a + b)^2 = a^2 + 2ab + b^2"
+      },
+      {
+        question: "lim(x→0) (sin x)/x = ?",
+        options: ["0", "1", "∞", "Does not exist"],
+        answer: 1,
+        explanation: "This is a standard limit in calculus."
+      },
+      {
+        question: "What is the inverse of a function?",
+        options: ["f(x) + 1", "f(-x)", "f⁻¹(x)", "f(x)^-1"],
+        answer: 2,
+        explanation: "The inverse of a function is denoted as f⁻¹(x)"
+      },
+      {
+        question: "Which is a quadratic equation?",
+        options: ["x^2 + 2x + 1 = 0", "x + 2 = 0", "x^3 + x = 0", "x^4 = 1"],
+        answer: 0,
+        explanation: "Quadratic equations are of the form ax^2 + bx + c = 0"
+      },
+      {
+        question: "If A = [2 0; 0 3], then trace(A) = ?",
+        options: ["6", "5", "2", "None"],
+        answer: 1,
+        explanation: "Trace = sum of diagonal elements = 2 + 3 = 5"
+      },
+      {
+        question: "What is the slope of a line parallel to y = 3x + 1?",
+        options: ["3", "1", "0", "-3"],
+        answer: 0,
+        explanation: "Parallel lines have the same slope, which is 3 here."
+      },
+      {
+        question: "cos(90°) = ?",
+        options: ["0", "1", "-1", "undefined"],
+        answer: 0,
+        explanation: "cos(90°) = 0"
+      },
+      {
+        question: "If a line has slope m = -2, angle with x-axis is?",
+        options: ["63.4°", "116.6°", "90°", "26.6°"],
+        answer: 1,
+        explanation: "tan θ = m → θ = arctan(-2) ≈ 116.6°"
+      },
+      {
+        question: "Find area of circle with r = 7 units",
+        options: ["49π", "14π", "21π", "None"],
+        answer: 0,
+        explanation: "Area = πr² = π * 7 * 7 = 49π"
+      },
+      {
+        question: "If log 2 = 0.3010, then log 8 = ?",
+        options: ["0.6020", "0.9030", "0.3010", "None"],
+        answer: 1,
+        explanation: "log(2^3) = 3 log 2 = 0.9030"
+      },
+      {
+        question: "Find the roots of x² - 5x + 6 = 0",
+        options: ["2, 3", "1, 6", "-2, -3", "None"],
+        answer: 0,
+        explanation: "Roots are x = 2 and 3 as (x-2)(x-3)=0"
+      },
+      {
+        question: "In a right triangle, the hypotenuse is 13 and one leg is 5. Other leg is?",
+        options: ["12", "10", "8", "None"],
+        answer: 0,
+        explanation: "Using Pythagoras: √(13² - 5²) = √(169 - 25) = 12"
+      },
+      {
+        question: "What is the integration of 1/x dx?",
+        options: ["log x", "x log x", "1/x", "x^2"],
+        answer: 0,
+        explanation: "∫1/x dx = log|x| + C"
+      },
+      
+
+    {
+      question: "If A = [1 0; 0 1], then A is?",
+      options: ["Null Matrix", "Diagonal Matrix", "Identity Matrix", "Skew Matrix"],
+      answer: 2,
+      explanation: "A is an identity matrix as all diagonal elements are 1 and rest are 0."
+    },
+    {
+      question: "The determinant of matrix [[2, 3], [1, 4]] is:",
+      options: ["5", "2", "11", "7"],
+      answer: 2,
+      explanation: "Det = (2×4 - 3×1) = 8 - 3 = 5"
+    },
+    {
+      question: "If sin θ = 1/2, then θ = ?",
+      options: ["30°", "45°", "60°", "90°"],
+      answer: 0,
+      explanation: "sin(30°) = 1/2"
+    },
+    {
+      question: "tan A × cot A = ?",
+      options: ["0", "1", "tan²A", "cot²A"],
+      answer: 1,
+      explanation: "tan A × cot A = (sin A/cos A) × (cos A/sin A) = 1"
+    },
+    {
+      question: "If A = 3x³ + 2x² - x + 7, find A' (derivative)",
+      options: ["9x² + 4x - 1", "9x² - 4x - 1", "6x² + 4x - 1", "None"],
+      answer: 0,
+      explanation: "Use power rule: d/dx = 9x² + 4x - 1"
+    },
+    {
+      question: "log(a*b) = ?",
+      options: ["log a + log b", "log a - log b", "log(a/b)", "None"],
+      answer: 0,
+      explanation: "By logarithmic identity: log(ab) = log a + log b"
+    },
+    {
+      question: "If x = 3, y = 4, find distance from origin",
+      options: ["5", "6", "7", "None"],
+      answer: 0,
+      explanation: "Distance = √(x² + y²) = √(9+16) = 5"
+    },
+    {
+      question: "tan(45°) = ?",
+      options: ["1", "0", "∞", "None"],
+      answer: 0,
+      explanation: "tan(45°) = 1"
+    },
+    {
+      question: "What is the integral of e^x?",
+      options: ["e^x + C", "x e^x", "ln x", "None"],
+      answer: 0,
+      explanation: "∫e^x dx = e^x + C"
+    },
+    {
+      question: "Which is a linear equation?",
+      options: ["x + 1 = 0", "x² + x = 0", "x³ = 1", "x⁴ = 0"],
+      answer: 0,
+      explanation: "Linear equations are of the form ax + b = 0"
+    },
+    {
+      question: "log₁₀ 1000 = ?",
+      options: ["2", "3", "1", "4"],
+      answer: 1,
+      explanation: "log₁₀ 1000 = log₁₀ (10³) = 3"
+    },
+    {
+      question: "∫x dx = ?",
+      options: ["x²/2 + C", "x + C", "x² + C", "1/x + C"],
+      answer: 0,
+      explanation: "∫x dx = x²/2 + C"
+    },
+    {
+      question: "cos²x + sin²x = ?",
+      options: ["1", "0", "x", "2"],
+      answer: 0,
+      explanation: "Basic identity in trigonometry."
+    },
+    {
+      question: "Matrix with zero everywhere except diagonal is called?",
+      options: ["Diagonal Matrix", "Null Matrix", "Identity Matrix", "Unit Matrix"],
+      answer: 0,
+      explanation: "A diagonal matrix has non-zero diagonal and all other elements 0."
+    },
+    {
+      question: "sin(90°) = ?",
+      options: ["0", "1", "Undefined", "∞"],
+      answer: 1,
+      explanation: "sin(90°) = 1"
+    },
+    {
+      question: "What is the derivative of e^x?",
+      options: ["e^x", "x e^x", "1/x", "ln x"],
+      answer: 0,
+      explanation: "d/dx e^x = e^x"
+    },
+    {
+      question: "The limit lim(x→0) (1 - cos x)/x² is?",
+      options: ["0", "1", "½", "∞"],
+      answer: 2,
+      explanation: "lim(x→0) (1 - cos x)/x² = ½"
+    },
+    {
+      question: "Which one is not a trigonometric identity?",
+      options: ["sin²x + cos²x = 1", "1 + tan²x = sec²x", "1 + cot²x = csc²x", "tan x = sin x / cos x", "cos x = tan x × sin x"],
+      answer: 4,
+      explanation: "cos x ≠ tan x × sin x"
+    },
+    {
+      question: "Slope of line joining (1, 2) and (3, 6) is?",
+      options: ["2", "4", "1", "½"],
+      answer: 0,
+      explanation: "m = (6 - 2)/(3 - 1) = 4/2 = 2"
+    },
+    {
+      question: "What is the area of triangle with base 10, height 5?",
+      options: ["25", "50", "15", "30"],
+      answer: 0,
+      explanation: "Area = ½ × base × height = 25"
+    },
+
+    {
+      question: "What is the value of (log 1000) to base 10?",
+      options: ["2", "3", "4", "1"],
+      answer: 1,
+      explanation: "log₁₀(1000) = log₁₀(10³) = 3"
+    },
+    {
+      question: "If a^x = a^y, then x = ?",
+      options: ["x + y", "x - y", "y", "xy"],
+      answer: 2,
+      explanation: "If the base is same and values are equal, then exponents must be equal: x = y"
+    },
+    {
+      question: "Find the derivative of x^2 + 3x + 2",
+      options: ["2x + 3", "x^2 + 3", "3x + 2", "2x + 2"],
+      answer: 0,
+      explanation: "d/dx(x² + 3x + 2) = 2x + 3"
+    },
+    {
+      question: "∫x dx = ?",
+      options: ["x", "x²", "x²/2", "2x"],
+      answer: 2,
+      explanation: "∫x dx = x²/2 + C"
+    },
+    {
+      question: "If sin A = 3/5, then cos A = ?",
+      options: ["4/5", "5/3", "3/4", "4/3"],
+      answer: 0,
+      explanation: "cos²A = 1 - sin²A = 1 - (9/25) = 16/25 → cos A = 4/5"
+    },
+    {
+      question: "A determinant is said to be singular if its value is:",
+      options: ["1", "0", "-1", "Not defined"],
+      answer: 1,
+      explanation: "A singular matrix has determinant = 0"
+    },
+    {
+      question: "The angle between two perpendicular lines is:",
+      options: ["0°", "180°", "45°", "90°"],
+      answer: 3,
+      explanation: "By definition, perpendicular lines form a 90° angle"
+    },
+    {
+      question: "Slope of x-axis is:",
+      options: ["0", "∞", "1", "-1"],
+      answer: 0,
+      explanation: "x-axis is horizontal, so slope = 0"
+    },
+    {
+      question: "The distance between (0,0) and (3,4) is:",
+      options: ["7", "5", "4", "3"],
+      answer: 1,
+      explanation: "Distance = √(3² + 4²) = √25 = 5"
+    },
+    {
+      question: "If A = [1 2; 3 4], then A^T = ?",
+      options: ["[1 3; 2 4]", "[1 2; 4 3]", "[4 3; 2 1]", "[1 2; 3 4]"],
+      answer: 0,
+      explanation: "Transpose of matrix A is obtained by swapping rows and columns"
+    },
+
+    // 40 more questions (continued below)
+
+    {
+      question: "What is the expansion of (x - y)^2?",
+      options: ["x^2 - y^2", "x^2 + 2xy + y^2", "x^2 - 2xy + y^2", "x^2 + y^2"],
+      answer: 2,
+      explanation: "(x - y)^2 = x^2 - 2xy + y^2"
+    },
+    {
+      question: "log(ab) = ?",
+      options: ["log a + log b", "log a - log b", "log a × log b", "log a / log b"],
+      answer: 0,
+      explanation: "log(ab) = log a + log b"
+    },
+    {
+      question: "What is the solution of x^2 = 49?",
+      options: ["±7", "7", "-7", "0"],
+      answer: 0,
+      explanation: "x = ±√49 = ±7"
+    },
+    {
+      question: "The general solution of sin x = 0 is:",
+      options: ["x = nπ", "x = n", "x = 0", "x = π/2"],
+      answer: 0,
+      explanation: "sin x = 0 when x = nπ, where n is an integer"
+    },
+    {
+      question: "What is the value of cos(0°)?",
+      options: ["0", "1", "-1", "Undefined"],
+      answer: 1,
+      explanation: "cos(0°) = 1"
+    },
+    {
+      question: "If A = [1 0; 0 1], then A is:",
+      options: ["Null Matrix", "Identity Matrix", "Diagonal Matrix", "Singular Matrix"],
+      answer: 1,
+      explanation: "Matrix with 1s on diagonal and 0s elsewhere is Identity Matrix"
+    },
+    {
+      question: "d/dx (e^x) = ?",
+      options: ["e^x", "x^e", "log x", "1/x"],
+      answer: 0,
+      explanation: "Derivative of e^x is e^x"
+    },
+    {
+      question: "∫cos x dx = ?",
+      options: ["sin x", "-cos x", "tan x", "-sin x"],
+      answer: 0,
+      explanation: "∫cos x dx = sin x + C"
+    },
+    {
+      question: "Which of the following is an identity matrix?",
+      options: ["[1 0; 0 1]", "[0 1; 1 0]", "[1 1; 0 0]", "[0 0; 0 0]"],
+      answer: 0,
+      explanation: "Identity matrix has 1s on diagonal, 0s elsewhere"
+    },
+    {
+      question: "The roots of x² - 2x + 1 = 0 are:",
+      options: ["1, -1", "1, 1", "0, 1", "2, 0"],
+      answer: 1,
+      explanation: "(x - 1)^2 = 0 → x = 1,1"
+    },
+    
+    {
+      question: "Find the value of tan(45°):",
+      options: ["0", "1", "√3", "∞"],
+      answer: 1,
+      explanation: "tan(45°) = 1"
+    },
+    {
+      question: "The value of sec²θ - tan²θ is:",
+      options: ["0", "1", "θ", "Undefined"],
+      answer: 1,
+      explanation: "Identity: sec²θ - tan²θ = 1"
+    },
+    {
+      question: "If A = [1 2; 3 4], then adjoint of A is:",
+      options: ["[4 -2; -3 1]", "[4 3; 2 1]", "[-4 2; 3 -1]", "[1 -2; -3 4]"],
+      answer: 0,
+      explanation: "Adjoint = transpose of cofactor matrix"
+    },
+    {
+      question: "The inverse of matrix A exists only if:",
+      options: ["|A| = 0", "|A| ≠ 0", "A is symmetric", "A is diagonal"],
+      answer: 1,
+      explanation: "Matrix inverse exists only if determinant ≠ 0"
+    },
+    {
+      question: "d/dx (ln x) = ?",
+      options: ["1", "x", "1/x", "ln x"],
+      answer: 2,
+      explanation: "Derivative of ln x = 1/x"
+    },
+    {
+      question: "If y = x^3, then dy/dx = ?",
+      options: ["3x", "x^2", "3x^2", "x^3"],
+      answer: 2,
+      explanation: "dy/dx = 3x^2"
+    },
+    {
+      question: "What is the integral of sin x dx?",
+      options: ["cos x", "-cos x", "-sin x", "sec x"],
+      answer: 1,
+      explanation: "∫sin x dx = -cos x + C"
+    },
+    {
+      question: "cos²x + sin²x = ?",
+      options: ["1", "0", "2", "x"],
+      answer: 0,
+      explanation: "This is a basic trigonometric identity"
+    },
+    {
+      question: "What is the discriminant of x² - 4x + 4 = 0?",
+      options: ["0", "4", "8", "16"],
+      answer: 0,
+      explanation: "D = b² - 4ac = 16 - 16 = 0"
+    },
+    {
+      question: "tan(0°) = ?",
+      options: ["1", "0", "∞", "-1"],
+      answer: 1,
+      explanation: "tan(0°) = 0"
+    },
+    {
+      question: "If a and b are two vectors, then |a × b| = ?",
+      options: ["ab", "a + b", "ab sinθ", "ab cosθ"],
+      answer: 2,
+      explanation: "Magnitude of cross product = ab sinθ"
+    },
+    {
+      question: "If x = 3 is a root of equation x² - 6x + 9 = 0, the other root is:",
+      options: ["3", "-3", "0", "None"],
+      answer: 0,
+      explanation: "Both roots are equal as it’s a perfect square"
+    },
+    {
+      question: "tan A = sin A / ?",
+      options: ["cos A", "tan A", "sec A", "cot A"],
+      answer: 0,
+      explanation: "tan A = sin A / cos A"
+    },
+    {
+      question: "What is the standard form of circle?",
+      options: ["x² + y² = r²", "x + y = r", "x² + y = r²", "x² - y² = r²"],
+      answer: 0,
+      explanation: "Standard form: x² + y² = r²"
+    },
+    {
+      question: "Find the coordinates of origin:",
+      options: ["(1,1)", "(0,0)", "(1,0)", "(0,1)"],
+      answer: 1,
+      explanation: "Origin = (0,0)"
+    },
+    {
+      question: "If two lines are parallel, their slopes are:",
+      options: ["Equal", "Negative", "Zero", "Opposite"],
+      answer: 0,
+      explanation: "Parallel lines have equal slopes"
+    },
+    {
+      question: "The angle of elevation is always:",
+      options: ["More than 90°", "Less than 90°", "Exactly 90°", "More than 180°"],
+      answer: 1,
+      explanation: "Angle of elevation is always acute"
+    },
+    {
+      question: "If a function is one-one and onto, it is called:",
+      options: ["Inverse", "Surjective", "Bijective", "Injective"],
+      answer: 2,
+      explanation: "Both one-one and onto = Bijective"
+    },
+    {
+      question: "The domain of f(x) = 1/x is:",
+      options: ["All real numbers", "x ≠ 0", "x > 0", "x < 0"],
+      answer: 1,
+      explanation: "Function not defined at x = 0"
+    },
+    {
+      question: "cot(90°) = ?",
+      options: ["0", "1", "∞", "Undefined"],
+      answer: 3,
+      explanation: "cot(90°) = cos(90°)/sin(90°) = 0/1 = 0 → cot(90°) = Undefined"
+    },
+    {
+      question: "What is (x + 1)^3?",
+      options: ["x^3 + 3x^2 + 3x + 1", "x^3 + x", "x^3 + 1", "x^3 + 2x^2 + x + 1"],
+      answer: 0,
+      explanation: "Binomial expansion: (x + 1)^3 = x^3 + 3x^2 + 3x + 1"
+    },
+    {
+      question: "Which matrix has all zero elements?",
+      options: ["Unit", "Diagonal", "Null", "Identity"],
+      answer: 2,
+      explanation: "Null matrix has all zero elements"
+    },
+    {
+      question: "A straight line has equation y = mx + c. m is:",
+      options: ["y-intercept", "slope", "angle", "none"],
+      answer: 1,
+      explanation: "m is the slope of the line"
+    },
+    {
+      question: "A line perpendicular to x-axis has:",
+      options: ["Zero slope", "Undefined slope", "Negative slope", "Slope 1"],
+      answer: 1,
+      explanation: "Vertical lines have undefined slope"
+    },
+    {
+      question: "Area of triangle with base b and height h is:",
+      options: ["1/2 bh", "bh", "b + h", "2bh"],
+      answer: 0,
+      explanation: "Area = 1/2 × base × height"
+    },
+    {
+      question: "Number of solutions of a quadratic equation is:",
+      options: ["0", "1", "2", "Up to 2"],
+      answer: 3,
+      explanation: "Quadratic equations have at most 2 real roots"
+    },
+    {
+      question: "What is the solution to sin x = 1?",
+      options: ["x = π/2 + 2nπ", "x = 0", "x = π", "x = nπ"],
+      answer: 0,
+      explanation: "sin x = 1 at x = π/2 + 2nπ"
+    },
+    {
+      question: "Which is the longest side in a right triangle?",
+      options: ["Opposite", "Adjacent", "Hypotenuse", "Any"],
+      answer: 2,
+      explanation: "Hypotenuse is always longest"
+    },
+    {
+      question: "The graph of y = x² is a:",
+      options: ["Circle", "Line", "Parabola", "Ellipse"],
+      answer: 2,
+      explanation: "y = x² is a parabola opening upwards"
+    },
+    {
+      question: "What is the value of cos²30° + sin²30°?",
+      options: ["1", "0", "0.5", "2"],
+      answer: 0,
+      explanation: "cos²x + sin²x = 1 for all x"
+    }
+
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function startQuiz() {
+      const name = document.getElementById('username').value;
+      if (!name) {
+        alert("Please enter your name to start the quiz.");
+        return;
+      }
+      shuffleArray(questions); // shuffle here
+      currentQuestion = 0;
+      score = 0;
+      document.getElementById('startScreen').classList.remove('active');
+      document.getElementById('quizContainer').classList.add('active');
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+      document.getElementById('question').innerText = q.question;
+      const optionsContainer = document.getElementById('options');
+      const explanationEl = document.getElementById('explanation');
+      explanationEl.innerText = '';
+      optionsContainer.innerHTML = '';
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.innerText = opt;
+        btn.style.display = 'block';
+        btn.style.margin = '0.5rem auto';
+        btn.onmouseenter = () => btn.style.boxShadow = '0 0 10px #00fff7';
+        btn.onmouseleave = () => btn.style.boxShadow = 'none';
+        btn.onclick = () => selectOption(idx);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function showExplanation() {
+      const q = questions[currentQuestion];
+      document.getElementById('explanation').innerText = q.explanation;
+    }
+
+    function selectOption(selected) {
+      const correct = questions[currentQuestion].answer;
+      const options = document.querySelectorAll('#options button');
+      options.forEach((btn, idx) => {
+        if (idx === correct) btn.style.backgroundColor = 'lime';
+        else if (idx === selected) btn.style.backgroundColor = 'red';
+        btn.disabled = true;
+      });
+      if (selected === correct) score++;
+    }
+
+    function nextQuestion() {
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      document.getElementById('quizContainer').classList.remove('active');
+      document.getElementById('resultScreen').classList.add('active');
+      const percentage = Math.round((score / questions.length) * 100);
+      const name = document.getElementById('username').value;
+      document.getElementById('scoreText').innerText = `${name}, you scored ${score} out of ${questions.length} (${percentage}%)`;
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      document.getElementById('resultScreen').classList.remove('active');
+      document.getElementById('startScreen').classList.add('active');
+    }
+  </script>
+</body>
+</html>
